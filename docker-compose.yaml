@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  landingpage:
+    image: audinoanter/landingpage:1
+    restart: always
+    ports:
+      - 5050:80
+    networks:
+      - dev-network
+  web:
+    image: audinoanter/sosmed:1
+    restart: always
+    ports:
+      - 9090:80
+    environment:
+      DB_HOST: db
+      DB_USER: devops
+      DB_PASS: 12345
+      DB_NAME: dbpesbuk
+    networks:
+      - devops-network
+  db:
+    image: mysql:5.7
+    restart: always
+    ports:
+      - 3206:3206
+    environment:
+      MYSQL_DATABASE: dbpesbuk
+      MYSQL_USER: devops
+      MYSQL_PASSWORD: 12345
+      MYSQL_ROOT_PASSWORD: audino
+    volumes:
+       - db:/var/lib/mysql
+    networks:
+       - devops-network
+networks:
+  devops-network:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 200.168.0.0/24
+        gateway: 200.168.0.1
+  dev-network:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 201.168.0.0/24
+        gateway: 201.168.0.1
+volumes:
+  db:
